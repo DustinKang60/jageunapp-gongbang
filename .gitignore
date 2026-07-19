@@ -1,0 +1,18 @@
+# 작은앱공방 — 판매 페이지 백업용 저장소
+# 개별 앱은 각자의 저장소에서 관리하므로 여기서는 제외한다.
+# (필요하면 각 앱 저장소에서 다시 clone)
+baby-diary/
+buencamino/
+gaegyebu/
+golfapp/
+memoapp/
+seniorcare/
+talk-spark/
+whateat/
+
+# 빌드 산출물·대용량·임시
+*.apk
+node_modules/
+dist/
+.DS_Store
+Thumbs.db

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>작은앱공방 — 필요한 앱을 골라 쓰세요</title>
 <meta name="description" content="작은앱공방 — 직접 만든 작은 앱들을 무료로 나눕니다. 필요한 것을 골라 바로 쓰세요.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#2f6f4f">
 <style>
   :root {
     --bg: #f7f7f5;
@@ -168,7 +170,7 @@
   </main>
 
   <footer>
-    작은앱공방 · 문의는 준비중
+    작은앱공방
   </footer>
 
 <script>
@@ -371,7 +373,11 @@
   }
 
   const grid = document.getElementById('grid');
-  grid.innerHTML = APPS.map(cardHTML).join('');
+  // 첫 페이지 카드 노출 순서 (id 기준). 순서를 바꾸려면 이 배열만 고치면 된다.
+  const ORDER = ['memoapp','gaegyebu','talk-spark','whateat','golfapp','buencamino','seniorcare','baby-diary'];
+  const orderedApps = ORDER.map(id => APPS.find(a => a.id === id)).filter(Boolean)
+    .concat(APPS.filter(a => !ORDER.includes(a.id)));  // ORDER에 빠진 앱이 있으면 뒤에 붙여 사라지지 않게
+  grid.innerHTML = orderedApps.map(cardHTML).join('');
 
   grid.addEventListener('click', e => {
     const btn = e.target.closest('.more');

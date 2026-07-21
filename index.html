@@ -294,9 +294,14 @@
     if (app.platforms) return app.platforms;
     return app.type === 'download' ? ['android'] : ['android','ios'];
   }
-  const PLAT_LABEL = { android: '🤖 안드로이드', ios: '🍎 아이폰' };
+  // 8개 중 7개가 안드로이드+아이폰으로 같아서, 모두에게 배지를 붙이면
+  // 정보가 아니라 잡음이 된다. 제한이 있는 앱(예: 보디가드=안드로이드 전용)만
+  // 예외로 배지 하나를 붙여 알린다. 나머지는 표시 안 함.
   function platBadges(app){
-    return platforms(app).map(p => '<span class="badge plat">'+PLAT_LABEL[p]+'</span>').join('');
+    const ps = platforms(app);
+    if (ps.length === 1 && ps[0] === 'android') return '<span class="badge plat">🤖 안드로이드 전용</span>';
+    if (ps.length === 1 && ps[0] === 'ios')     return '<span class="badge plat">🍎 아이폰 전용</span>';
+    return '';
   }
 
   function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
@@ -357,7 +362,7 @@
         '<div><h3>'+esc(app.name)+'</h3>'+
           '<span class="badge '+app.type+'">'+BADGE[app.type]+'</span>'+
           (app.needsApiKey ? '<span class="badge key">🔑 API 키 필요</span>' : '')+
-          '<div style="margin-top:4px">'+platBadges(app)+'</div></div>'+
+          platBadges(app)+'</div>'+
       '</div>'+
       '<p class="tagline">'+esc(app.tagline)+'</p>'+
       actionHTML(app)+

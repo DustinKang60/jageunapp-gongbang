@@ -51,8 +51,10 @@
     box-shadow: var(--shadow); padding: 18px; display: flex; flex-direction: column; gap: 10px;
   }
   .card-top { display: flex; align-items: center; gap: 12px; }
+  /* 실제 앱 아이콘을 얹고, 로드 실패 시 아래 이모지가 드러난다 */
   .emoji { font-size: 1.8rem; line-height: 1; width: 44px; height: 44px; display: grid; place-items: center;
-    background: var(--accent-soft); border-radius: 12px; flex: none; }
+    background: var(--accent-soft); border-radius: 12px; flex: none; position: relative; overflow: hidden; }
+  .emoji img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .card h3 { margin: 0; font-size: 1.1rem; }
   .badge { display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-top: 3px; }
   .badge.web { color: var(--web); background: var(--web-bg); }
@@ -60,6 +62,8 @@
   .badge.soon { color: var(--soon); background: var(--soon-bg); }
   .badge.key { color: #9a6b00; background: #fbeecb; margin-left: 4px; }
   @media (prefers-color-scheme: dark) { .badge.key { color: #e5c07b; background: #3a2f18; } }
+  .badge.plat { color: #444; background: #ececec; margin-left: 4px; }
+  @media (prefers-color-scheme: dark) { .badge.plat { color: #cfcfcf; background: #333; } }
   .tagline { color: var(--muted); font-size: .92rem; margin: 0; flex: 1; }
 
   .actions { display: flex; gap: 8px; margin-top: 4px; }
@@ -87,6 +91,10 @@
   .faq-q { font-weight: 600; margin: 10px 0 2px; font-size: .92rem; }
   .faq-a { color: var(--muted); font-size: .9rem; margin: 0; }
   .placeholder { color: var(--muted); font-style: italic; }
+  .install { background: var(--dl-bg); border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
+  .install h4 { margin-top: 0 !important; }
+  .inapp-warn { background: #fff4e5; color: #663c00; border-radius: 8px; padding: 8px 10px; font-size: .86rem !important; line-height: 1.45; margin: 4px 0 8px; }
+  @media (prefers-color-scheme: dark) { .inapp-warn { background: #3a2f18; color: #e5c07b; } }
 
   /* Donation */
   .thanks { margin: 40px 0 20px; }
@@ -222,18 +230,21 @@
       faq: []
     },
     {
-      id: 'seniorcare', name: '시니어 안심 터치', emoji: '🆘', type: 'download',
+      id: 'seniorcare', name: '보디가드', emoji: '🆘', type: 'download', install: true,
       url: '',
-      tagline: '위급할 때 큰 버튼 하나로 보호자에게 문자·위치 전송',
-      about: '어르신이 큰 버튼 하나로 보호자에게 응급 요청과 현재 위치를 문자로 보낼 수 있어요. 12시간 동안 화면이 켜지지 않으면 자동으로 안부 문자를, 배터리가 부족하면 알림 문자를 보냅니다.',
+      tagline: '혼자 계신 부모님 곁을 지키는 보디가드 — 버튼 하나로 도움 요청',
+      about: '연세 드신 부모님이 밖에서 몸이 안 좋거나 길을 잃었을 때, 큰 버튼 하나만 누르면 가족에게 문자와 현재 위치가 즉시 전송됩니다. 12시간 동안 휴대폰을 쓰지 않으면 자동으로 안부 문자를 보내고, 배터리가 부족해도 알려줍니다. 혼자 다니는 가족의 귀가 알림으로도 그대로 쓸 수 있어요.',
       howto: [
-        '보호자가 어르신 성함과 응급 연락처를 설정합니다.',
-        '어르신은 큰 버튼(아파요·택시·길 잃음·도착·전화)만 누르면 됩니다.',
-        '위급 시 보호자에게 문자와 현재 위치가 자동 전송됩니다.'
+        '가족이 사용하는 분의 호칭과 응급 연락처(1·2순위)를 설정합니다.',
+        '사용하는 분은 큰 버튼만 누르면 됩니다 — 도움 요청·택시·길 잃음·도착·전화.',
+        '위급 시 가족에게 문자가 즉시 가고, 현재 위치가 이어서 전송됩니다.',
+        '잘못 눌렀다면 결과 화면에서 취소 문자를 보낼 수 있어요.'
       ],
       faq: [
-        { q: '개인정보가 외부로 나가나요?', a: '아니요. 연락처·위치는 기기에만 저장되고, 위급 시 지정한 보호자에게 문자로만 전송됩니다. 외부 서버에 수집·저장하지 않아요.' },
-        { q: '왜 설치(APK)가 필요한가요?', a: '문자 자동 발송과 백그라운드 안전 감시는 웹에서는 불가능하고 설치형 앱에서만 되기 때문이에요.' }
+        { q: '개인정보가 외부로 나가나요?', a: '아니요. 연락처·위치는 기기에만 저장되고, 위급 시 지정한 가족에게 문자로만 전송됩니다. 외부 서버에 수집·저장하지 않아요.' },
+        { q: '왜 설치(APK)가 필요한가요?', a: '문자 자동 발송과 백그라운드 안전 감시는 웹에서는 불가능하고 설치형 앱에서만 되기 때문이에요.' },
+        { q: '인터넷이 안 되는 곳에서도 되나요?', a: '문자는 통신사 망으로 전송되어 데이터가 끊겨도 발송됩니다. 카카오톡 대신 문자를 쓰는 이유예요. (위치는 GPS가 필요합니다)' },
+        { q: '부모님 말고 다른 가족도 쓸 수 있나요?', a: '네. 늦게 귀가하는 가족의 도착 알림, 아이의 하교 알림으로도 그대로 쓸 수 있어요.' }
       ]
     },
     {
@@ -276,11 +287,24 @@
 
   const BADGE = { web: '웹앱 · 바로 실행', download: '다운로드', soon: '준비중' };
 
+  // 플랫폼 배지. 앱에 platforms를 지정하면 그걸 쓰고,
+  // 없으면 타입으로 정한다: 웹앱은 URL이라 아이폰 Safari에서도 열리고,
+  // 설치형(APK)은 안드로이드 전용이다.
+  function platforms(app){
+    if (app.platforms) return app.platforms;
+    return app.type === 'download' ? ['android'] : ['android','ios'];
+  }
+  const PLAT_LABEL = { android: '🤖 안드로이드', ios: '🍎 아이폰' };
+  function platBadges(app){
+    return platforms(app).map(p => '<span class="badge plat">'+PLAT_LABEL[p]+'</span>').join('');
+  }
+
   function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 
   function detailHTML(app){
     let h = '<div class="detail" id="d-'+app.id+'">';
     h += '<h4>소개</h4><p class="placeholder">'+esc(app.about)+'</p>';
+    if (app.install) h += installHTML();
     if (app.howto && app.howto.length){
       h += '<h4>사용 방법</h4><ol>';
       app.howto.forEach(s => h += '<li class="placeholder">'+esc(s)+'</li>');
@@ -297,6 +321,22 @@
     return h;
   }
 
+  // 설치형(APK) 앱 안내. 카카오톡 등 인앱 브라우저에서 열면 다운로드가
+  // 막히므로 '다른 브라우저로 열기'를 먼저 안내하고, 설치 3단계를 보여준다.
+  function installHTML(){
+    return '<div class="install">'+
+      '<h4>📱 설치 방법 (안드로이드)</h4>'+
+      '<p class="inapp-warn">⚠️ 카카오톡·인스타 등에서 이 페이지를 열었다면, '+
+        '오른쪽 위 <b>⋮</b> → <b>다른 브라우저로 열기</b>(Chrome 등)로 연 뒤 받아 주세요. '+
+        '앱 안에서는 다운로드가 막힐 수 있어요.</p>'+
+      '<ol>'+
+        '<li>위 <b>다운로드</b> 버튼을 눌러 설치 파일(APK)을 받습니다.</li>'+
+        '<li>"이 출처의 앱 설치를 허용" 안내가 뜨면 <b>허용</b>합니다. (구글 플레이가 아닌 직접 설치라서 한 번 묻습니다)</li>'+
+        '<li>받은 파일을 눌러 <b>설치</b>하면 끝. 아이폰에서는 설치할 수 없습니다.</li>'+
+      '</ol>'+
+    '</div>';
+  }
+
   function actionHTML(app){
     let primary;
     if (app.type === 'web')       primary = '<a class="btn primary" href="'+app.url+'" target="_blank" rel="noopener">열기 →</a>';
@@ -311,10 +351,13 @@
   function cardHTML(app){
     return '<article class="card">'+
       '<div class="card-top">'+
-        '<div class="emoji">'+app.emoji+'</div>'+
+        '<div class="emoji">'+app.emoji+
+          '<img src="icons/'+app.id+'.png" alt="'+esc(app.name)+' 아이콘" loading="lazy" onerror="this.remove()">'+
+        '</div>'+
         '<div><h3>'+esc(app.name)+'</h3>'+
           '<span class="badge '+app.type+'">'+BADGE[app.type]+'</span>'+
-          (app.needsApiKey ? '<span class="badge key">🔑 API 키 필요</span>' : '')+'</div>'+
+          (app.needsApiKey ? '<span class="badge key">🔑 API 키 필요</span>' : '')+
+          '<div style="margin-top:4px">'+platBadges(app)+'</div></div>'+
       '</div>'+
       '<p class="tagline">'+esc(app.tagline)+'</p>'+
       actionHTML(app)+

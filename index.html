@@ -17,36 +17,19 @@
   })();
 </script>
 <style>
+  /* 기본값은 다크. 시스템 설정과 무관하게 다크로 시작하고,
+     상단 버튼으로 명시적으로 라이트를 선택했을 때만 바뀐다. */
   :root {
-    --bg: #f7f7f5;
-    --card: #ffffff;
-    --text: #1f2328;
-    --muted: #6b7280;
-    --line: #e6e6e2;
-    --accent: #2f6f4f;
-    --accent-soft: #e7f1eb;
-    --web: #2f6f4f; --web-bg: #e7f1eb;
-    --dl: #2f5c8f; --dl-bg: #e5edf7;
-    --soon: #8a8a8a; --soon-bg: #ececec;
-    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05);
+    --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
+    --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
+    --web: #6bbf93; --web-bg: #22302a; --dl: #7fa9dd; --dl-bg: #1e2a3a;
+    --soon: #9aa1ab; --soon-bg: #2a2e34;
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.3);
     --radius: 16px;
-    --key-color: #9a6b00; --key-bg: #fbeecb;
-    --plat-color: #444; --plat-bg: #ececec;
-    --warn-bg: #fff4e5; --warn-color: #663c00;
+    --key-color: #e5c07b; --key-bg: #3a2f18;
+    --plat-color: #cfcfcf; --plat-bg: #333;
+    --warn-bg: #3a2f18; --warn-color: #e5c07b;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
-      --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
-      --web: #6bbf93; --web-bg: #22302a; --dl: #7fa9dd; --dl-bg: #1e2a3a;
-      --soon: #9aa1ab; --soon-bg: #2a2e34;
-      --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.3);
-      --key-color: #e5c07b; --key-bg: #3a2f18;
-      --plat-color: #cfcfcf; --plat-bg: #333;
-      --warn-bg: #3a2f18; --warn-color: #e5c07b;
-    }
-  }
-  /* 상단 설정 버튼으로 시스템 설정과 무관하게 강제 전환 */
   :root[data-theme="dark"] {
     --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
     --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
@@ -166,7 +149,7 @@
 </style>
 </head>
 <body>
-  <button id="themeToggle" class="theme-toggle" aria-label="다크 모드로 전환" title="다크 모드로 전환">🌙</button>
+  <button id="themeToggle" class="theme-toggle" aria-label="라이트 모드로 전환" title="라이트 모드로 전환">☀️</button>
 
   <header>
     <h1>
@@ -222,8 +205,7 @@
   /* ── 다크모드 전환 버튼 ── */
   (function () {
     const btn = document.getElementById('themeToggle');
-    const systemPrefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
-    const currentTheme = () => document.documentElement.getAttribute('data-theme') || (systemPrefersDark() ? 'dark' : 'light');
+    const currentTheme = () => document.documentElement.getAttribute('data-theme') || 'dark';
 
     function syncButton() {
       const dark = currentTheme() === 'dark';

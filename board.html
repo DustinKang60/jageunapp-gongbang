@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>의견 게시판 — 작은앱공방</title>
+<meta name="description" content="작은앱공방 의견 게시판 — 후기·건의를 남기고 다른 분들의 의견도 함께 봅니다.">
+<link rel="icon" type="image/png" href="ShoppingCart.png">
+<link rel="apple-touch-icon" href="ShoppingCart.png">
+<meta name="theme-color" content="#2f6f4f">
+<script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    if (saved === 'dark' || saved === 'light') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  })();
+</script>
+<style>
+  :root {
+    --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
+    --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.3);
+    --radius: 16px;
+  }
+  :root[data-theme="dark"] {
+    --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
+    --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.3);
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1f2328; --muted: #6b7280;
+    --line: #e6e6e2; --accent: #2f6f4f; --accent-soft: #e7f1eb;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 50;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    font-size: 1.1rem; cursor: pointer; display: grid; place-items: center;
+    box-shadow: var(--shadow); transition: .15s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  header { text-align: center; padding: 48px 20px 20px; }
+  .back { display: inline-block; color: var(--muted); text-decoration: none; font-size: .9rem; margin-bottom: 14px; }
+  .back:hover { color: var(--accent); }
+  header h1 { font-size: 1.6rem; margin: 0 0 8px; letter-spacing: -.02em; }
+  header p { color: var(--muted); margin: 0; font-size: .96rem; }
+
+  .btn { border: none; border-radius: 12px; padding: 11px 18px; font-size: .95rem; font-weight: 600;
+    cursor: pointer; font-family: inherit; }
+  .btn.primary { background: var(--accent); color: #06210f; }
+  :root[data-theme="light"] .btn.primary { color: #fff; }
+  .btn:disabled { opacity: .55; cursor: default; }
+
+  /* 글쓰기 폼 */
+  .board-form { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px; box-shadow: var(--shadow); margin: 8px 0 22px; }
+  .board-form .row { margin-bottom: 8px; }
+  .board-form input[type=text], .board-form textarea {
+    width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 12px; font-size: .95rem; font-family: inherit; box-sizing: border-box; }
+  .board-form input.name { max-width: 200px; }
+  .board-form textarea { min-height: 90px; resize: vertical; }
+  .board-form input:focus, .board-form textarea:focus { outline: none; border-color: var(--accent); }
+  .board-form .board-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .board-form .count { color: var(--muted); font-size: .78rem; }
+  .board-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .board-status { font-size: .84rem; color: var(--muted); margin: 10px 0 0; min-height: 1em; }
+
+  /* 검색 */
+  .search-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .search-row input { flex: 1; background: var(--card); color: var(--text); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 14px; font-size: .95rem; font-family: inherit; }
+  .search-row input:focus { outline: none; border-color: var(--accent); }
+  .search-count { color: var(--muted); font-size: .8rem; white-space: nowrap; }
+
+  /* 목록 */
+  .board-list { display: flex; flex-direction: column; gap: 10px; }
+  .msg { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; }
+  .msg .msg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 5px; }
+  .msg .msg-name { font-weight: 600; font-size: .92rem; }
+  .msg .msg-date { color: var(--muted); font-size: .76rem; white-space: nowrap; }
+  .msg .msg-body { font-size: .95rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+  .board-empty { color: var(--muted); font-size: .9rem; text-align: center; padding: 28px 10px; }
+
+  /* 운영자 답글 (스레드) */
+  .replies { margin-top: 10px; padding-left: 14px; border-left: 2px solid var(--accent); display: flex; flex-direction: column; gap: 8px; }
+  .reply { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; }
+  .reply .msg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .reply .msg-name { font-weight: 600; font-size: .88rem; }
+  .reply .msg-date { color: var(--muted); font-size: .74rem; white-space: nowrap; }
+  .reply .msg-body { font-size: .92rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .admin-badge { background: var(--accent); color: #06210f; font-size: .68rem; font-weight: 700;
+    padding: 1px 7px; border-radius: 6px; margin-left: 6px; vertical-align: middle; }
+  :root[data-theme="light"] .admin-badge { color: #fff; }
+</style>
+</head>
+<body>
+  <button id="themeToggle" class="theme-toggle" aria-label="라이트 모드로 전환" title="라이트 모드로 전환">☀️</button>
+
+  <header>
+    <a class="back" href="index.html">← 작은앱공방</a>
+    <h1>💬 의견 게시판</h1>
+    <p>써보고 좋았던 점, 불편한 점, 새로 있었으면 하는 앱 — 편하게 남겨 주세요. 가입 없이 바로 쓸 수 있어요.</p>
+  </header>
+
+  <main class="wrap">
+    <form class="board-form" id="boardForm" autocomplete="off">
+      <div class="row"><input type="text" class="name" id="bName" maxlength="20" placeholder="이름 (선택)"></div>
+      <div class="row"><textarea id="bMsg" maxlength="1000" placeholder="의견을 남겨 주세요" required></textarea></div>
+      <input type="text" class="board-hp" id="bHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="board-bottom">
+        <span class="count" id="bCount">0 / 1000</span>
+        <button type="submit" class="btn primary" id="bSubmit">남기기</button>
+      </div>
+      <p class="board-status" id="bStatus"></p>
+    </form>
+
+    <div class="search-row">
+      <input type="search" id="bSearch" placeholder="🔍 검색 (내용·이름)" autocomplete="off">
+      <span class="search-count" id="bSearchCount"></span>
+    </div>
+
+    <div class="board-list" id="boardList"></div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* ── 다크모드 전환 버튼 ── */
+  (function () {
+    const btn = document.getElementById('themeToggle');
+    const currentTheme = () => document.documentElement.getAttribute('data-theme') || 'dark';
+    function syncButton() {
+      const dark = currentTheme() === 'dark';
+      btn.textContent = dark ? '☀️' : '🌙';
+      btn.setAttribute('aria-label', dark ? '라이트 모드로 전환' : '다크 모드로 전환');
+      btn.title = btn.getAttribute('aria-label');
+    }
+    btn.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      syncButton();
+    });
+    syncButton();
+  })();
+
+  function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+  /* ── 의견 게시판 (Supabase) ──
+     아래 두 값을 Supabase 프로젝트 값으로 채우면 게시판이 켜집니다.
+     anon(공개) 키는 클라이언트 노출용이라 공개되어도 안전합니다 — 데이터는 RLS로 보호됩니다. */
+  const SB_URL = 'https://mrnlltqjuqjxrcmponbw.supabase.co';
+  const SB_ANON_KEY = 'sb_publishable_4gBfQigA8Brr312zrz10Lw_u6pg_MaI';
+
+  (function initBoard(){
+    const form = document.getElementById('boardForm');
+    const listEl = document.getElementById('boardList');
+    const statusEl = document.getElementById('bStatus');
+    const msgEl = document.getElementById('bMsg');
+    const nameEl = document.getElementById('bName');
+    const hpEl = document.getElementById('bHp');
+    const countEl = document.getElementById('bCount');
+    const submitBtn = document.getElementById('bSubmit');
+    const searchEl = document.getElementById('bSearch');
+    const searchCountEl = document.getElementById('bSearchCount');
+
+    let allMsgs = [];
+
+    msgEl.addEventListener('input', () => { countEl.textContent = msgEl.value.length + ' / 1000'; });
+
+    // 설정 전에는 폼을 숨기고 안내만 (페이지가 깨지지 않게)
+    if (!SB_URL || !SB_ANON_KEY || typeof window.supabase === 'undefined') {
+      form.style.display = 'none';
+      document.querySelector('.search-row').style.display = 'none';
+      listEl.innerHTML = '<p class="board-empty">게시판을 준비 중입니다. 곧 열립니다.</p>';
+      return;
+    }
+
+    const db = window.supabase.createClient(SB_URL, SB_ANON_KEY);
+
+    function fmtDate(iso){
+      const d = new Date(iso), p = n => String(n).padStart(2,'0');
+      return d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+    }
+
+    function replyHTML(m){
+      return '<div class="reply">'+
+          '<div class="msg-head">'+
+            '<span class="msg-name">'+esc(m.name && m.name.trim() ? m.name : '작은앱공방')+'<span class="admin-badge">운영자</span></span>'+
+            '<span class="msg-date">'+fmtDate(m.created_at)+'</span>'+
+          '</div>'+
+          '<div class="msg-body">'+esc(m.message)+'</div>'+
+        '</div>';
+    }
+
+    function postHTML(m, replies){
+      const rep = (replies && replies.length)
+        ? '<div class="replies">'+replies.map(replyHTML).join('')+'</div>' : '';
+      return '<div class="msg">'+
+          '<div class="msg-head">'+
+            '<span class="msg-name">'+esc(m.name && m.name.trim() ? m.name : '익명')+'</span>'+
+            '<span class="msg-date">'+fmtDate(m.created_at)+'</span>'+
+          '</div>'+
+          '<div class="msg-body">'+esc(m.message)+'</div>'+
+          rep+
+        '</div>';
+    }
+
+    function render(){
+      const q = searchEl.value.trim().toLowerCase();
+      // 답글을 원글 id별로 모음 (오래된 순 = 대화 읽는 순서)
+      const repliesBy = {};
+      allMsgs.forEach(m => {
+        if (m.reply_to != null){ (repliesBy[m.reply_to] = repliesBy[m.reply_to] || []).push(m); }
+      });
+      Object.keys(repliesBy).forEach(k => repliesBy[k].sort((a,b) => new Date(a.created_at) - new Date(b.created_at)));
+
+      const tops = allMsgs.filter(m => m.reply_to == null);   // 최신순(쿼리 desc 유지)
+      const match = m => (m.message||'').toLowerCase().includes(q) || (m.name||'').toLowerCase().includes(q);
+      const shown = q ? tops.filter(m => match(m) || (repliesBy[m.id]||[]).some(match)) : tops;
+
+      searchCountEl.textContent = q ? (shown.length + '개 찾음') : '';
+      if (!tops.length){ listEl.innerHTML = '<p class="board-empty">아직 글이 없어요. 첫 의견을 남겨 주세요!</p>'; return; }
+      if (!shown.length){ listEl.innerHTML = '<p class="board-empty">검색 결과가 없어요.</p>'; return; }
+      listEl.innerHTML = shown.map(m => postHTML(m, repliesBy[m.id])).join('');
+    }
+
+    async function load(){
+      const { data, error } = await db.from('feedback')
+        .select('id,name,message,created_at,reply_to,is_admin')
+        .order('created_at', { ascending:false })
+        .limit(500);
+      if (error){ listEl.innerHTML = '<p class="board-empty">글을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</p>'; return; }
+      allMsgs = data || [];
+      render();
+    }
+
+    searchEl.addEventListener('input', render);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (hpEl.value) return;                    // 봇 차단 (허니팟)
+      const message = msgEl.value.trim();
+      if (!message){ statusEl.textContent = '내용을 입력해 주세요.'; msgEl.focus(); return; }
+      const name = (nameEl.value.trim() || '익명').slice(0,20);
+      submitBtn.disabled = true;
+      statusEl.textContent = '남기는 중…';
+      const { error } = await db.from('feedback').insert({ name, message: message.slice(0,1000) });
+      submitBtn.disabled = false;
+      if (error){ statusEl.textContent = '저장에 실패했어요. 잠시 후 다시 시도해 주세요.'; return; }
+      msgEl.value = ''; nameEl.value = ''; countEl.textContent = '0 / 1000';
+      statusEl.textContent = '고맙습니다! 의견이 등록됐어요.';
+      load();
+    });
+
+    load();
+  })();
+</script>
+</body>
+</html>

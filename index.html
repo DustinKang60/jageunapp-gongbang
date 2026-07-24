@@ -146,6 +146,16 @@
   .apiguide .warn { color: var(--muted); font-size: .86rem; }
 
   footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 30px 20px 50px; }
+
+  /* ── 의견 게시판 입구 버튼 ── */
+  .board-entry { margin-top: 14px; }
+  .board-open-btn { display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 18px; font-size: .98rem; font-weight: 600; text-decoration: none;
+    box-shadow: var(--shadow); transition: border-color .15s, transform .05s; }
+  .board-open-btn:hover { border-color: var(--accent); }
+  .board-open-btn:active { transform: translateY(1px); }
+  .board-open-btn .sub { color: var(--muted); font-weight: 400; font-size: .84rem; }
 </style>
 </head>
 <body>
@@ -183,6 +193,12 @@
           <p class="warn">⚠️ Claude API는 사용량 기반 유료 서비스입니다. 사용료는 본인 부담이에요.</p>
         </div>
       </details>
+    </section>
+
+    <section class="board-entry">
+      <a class="board-open-btn" href="board.html" target="_blank" rel="noopener">
+        💬 의견 게시판 <span class="sub">— 후기·건의 남기고 다른 분들 의견도 보기</span>
+      </a>
     </section>
 
     <section class="thanks">

@@ -8,6 +8,14 @@
 <link rel="icon" type="image/png" href="ShoppingCart.png">
 <link rel="apple-touch-icon" href="ShoppingCart.png">
 <meta name="theme-color" content="#2f6f4f">
+<script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    if (saved === 'dark' || saved === 'light') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  })();
+</script>
 <style>
   :root {
     --bg: #f7f7f5;
@@ -22,15 +30,42 @@
     --soon: #8a8a8a; --soon-bg: #ececec;
     --shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05);
     --radius: 16px;
+    --key-color: #9a6b00; --key-bg: #fbeecb;
+    --plat-color: #444; --plat-bg: #ececec;
+    --warn-bg: #fff4e5; --warn-color: #663c00;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
       --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
       --web: #6bbf93; --web-bg: #22302a; --dl: #7fa9dd; --dl-bg: #1e2a3a;
       --soon: #9aa1ab; --soon-bg: #2a2e34;
       --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.3);
+      --key-color: #e5c07b; --key-bg: #3a2f18;
+      --plat-color: #cfcfcf; --plat-bg: #333;
+      --warn-bg: #3a2f18; --warn-color: #e5c07b;
     }
+  }
+  /* 상단 설정 버튼으로 시스템 설정과 무관하게 강제 전환 */
+  :root[data-theme="dark"] {
+    --bg: #16181c; --card: #1f2329; --text: #e6e8eb; --muted: #9aa1ab;
+    --line: #30353c; --accent: #6bbf93; --accent-soft: #22302a;
+    --web: #6bbf93; --web-bg: #22302a; --dl: #7fa9dd; --dl-bg: #1e2a3a;
+    --soon: #9aa1ab; --soon-bg: #2a2e34;
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.3);
+    --key-color: #e5c07b; --key-bg: #3a2f18;
+    --plat-color: #cfcfcf; --plat-bg: #333;
+    --warn-bg: #3a2f18; --warn-color: #e5c07b;
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1f2328; --muted: #6b7280;
+    --line: #e6e6e2; --accent: #2f6f4f; --accent-soft: #e7f1eb;
+    --web: #2f6f4f; --web-bg: #e7f1eb; --dl: #2f5c8f; --dl-bg: #e5edf7;
+    --soon: #8a8a8a; --soon-bg: #ececec;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.05);
+    --key-color: #9a6b00; --key-bg: #fbeecb;
+    --plat-color: #444; --plat-bg: #ececec;
+    --warn-bg: #fff4e5; --warn-color: #663c00;
   }
   * { box-sizing: border-box; }
   body {
@@ -39,6 +74,16 @@
     line-height: 1.6; -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+  /* 다크모드 전환 버튼 */
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 50;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    font-size: 1.1rem; cursor: pointer; display: grid; place-items: center;
+    box-shadow: var(--shadow); transition: .15s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
 
   /* Header */
   header { text-align: center; padding: 56px 20px 28px; }
@@ -63,10 +108,8 @@
   .badge.web { color: var(--web); background: var(--web-bg); }
   .badge.download { color: var(--dl); background: var(--dl-bg); }
   .badge.soon { color: var(--soon); background: var(--soon-bg); }
-  .badge.key { color: #9a6b00; background: #fbeecb; margin-left: 4px; }
-  @media (prefers-color-scheme: dark) { .badge.key { color: #e5c07b; background: #3a2f18; } }
-  .badge.plat { color: #444; background: #ececec; margin-left: 4px; }
-  @media (prefers-color-scheme: dark) { .badge.plat { color: #cfcfcf; background: #333; } }
+  .badge.key { color: var(--key-color); background: var(--key-bg); margin-left: 4px; }
+  .badge.plat { color: var(--plat-color); background: var(--plat-bg); margin-left: 4px; }
   .tagline { color: var(--muted); font-size: .92rem; margin: 0; flex: 1; }
 
   .actions { display: flex; gap: 8px; margin-top: 4px; }
@@ -96,8 +139,7 @@
   .placeholder { color: var(--muted); font-style: italic; }
   .install { background: var(--dl-bg); border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
   .install h4 { margin-top: 0 !important; }
-  .inapp-warn { background: #fff4e5; color: #663c00; border-radius: 8px; padding: 8px 10px; font-size: .86rem !important; line-height: 1.45; margin: 4px 0 8px; }
-  @media (prefers-color-scheme: dark) { .inapp-warn { background: #3a2f18; color: #e5c07b; } }
+  .inapp-warn { background: var(--warn-bg); color: var(--warn-color); border-radius: 8px; padding: 8px 10px; font-size: .86rem !important; line-height: 1.45; margin: 4px 0 8px; }
 
   /* Donation */
   .thanks { margin: 40px 0 20px; }
@@ -124,6 +166,8 @@
 </style>
 </head>
 <body>
+  <button id="themeToggle" class="theme-toggle" aria-label="다크 모드로 전환" title="다크 모드로 전환">🌙</button>
+
   <header>
     <h1>
       <svg class="logo" viewBox="0 0 44 44" role="img" aria-label="작은앱공방 로고" xmlns="http://www.w3.org/2000/svg">
@@ -175,6 +219,29 @@
   </footer>
 
 <script>
+  /* ── 다크모드 전환 버튼 ── */
+  (function () {
+    const btn = document.getElementById('themeToggle');
+    const systemPrefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+    const currentTheme = () => document.documentElement.getAttribute('data-theme') || (systemPrefersDark() ? 'dark' : 'light');
+
+    function syncButton() {
+      const dark = currentTheme() === 'dark';
+      btn.textContent = dark ? '☀️' : '🌙';
+      btn.setAttribute('aria-label', dark ? '라이트 모드로 전환' : '다크 모드로 전환');
+      btn.title = btn.getAttribute('aria-label');
+    }
+
+    btn.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      syncButton();
+    });
+
+    syncButton();
+  })();
+
   /* ── 앱 목록: 여기만 편집하면 카드가 자동 생성됩니다 ──
      type: 'web'(웹앱·바로열기) | 'download'(파일받기) | 'soon'(준비중)
      실제 소개/사용법/Q&A는 코드 분석·보안체크 후 채웁니다.        */
@@ -221,14 +288,19 @@
       url: 'https://talk-spark-eta.vercel.app',
       needsApiKey: 'Claude API',
       tagline: '사람들 만나기 전, 오늘의 대화거리를 미리 준비하세요',
-      about: '회사·모임 나가기 전 관심 키워드의 최신 뉴스를 AI가 정리하고, 그 자리에서 나눌 논쟁거리와 대화 질문까지 미리 만들어줍니다.',
+      about: '관심 키워드를 등록하면 네이버 뉴스에서 최신 기사를 모아 보여주고, 헤드라인·AI·세계 뉴스는 구글 뉴스로 함께 볼 수 있습니다. 마음에 드는 기사를 고르면 Claude AI가 내용을 읽고 경제적·사회적·개인 가치관 등 서로 다른 각도의 논쟁거리 3개를 만들어 줍니다. 각 논쟁거리에는 대화를 여는 질문 하나, 더 깊이 들어갈 꼬리질문 여러 개, 반대 관점까지 함께 담겨 있어 그 자리에서 바로 쓸 수 있어요. 마음에 든 논쟁거리는 하트를 눌러 보관함에 저장해 두고, 카카오톡 등으로 바로 공유할 수도 있습니다.',
       howto: [
         'Claude API 키를 발급받아 입력합니다.',
-        '관심 키워드를 등록합니다.',
-        '뉴스를 골라 AI 요약·토론거리를 받아봅니다.'
+        '관심 키워드를 등록하거나, 헤드라인·AI·세계 탭에서 오늘의 뉴스를 살펴봅니다.',
+        '기사를 고르면 AI가 논쟁거리 3개를 만들어 주고, 마음에 들면 보관함에 저장하거나 공유합니다.'
       ],
       faq: [
-        { q: 'API 키가 왜 필요한가요?', a: 'AI 요약·토론 생성은 본인의 Claude API 키로 동작합니다(사용료 본인 부담).' },
+        { q: '일반 뉴스 요약 앱과 뭐가 다른가요?', a: '뉴스를 요약해 주는 데서 끝나지 않고, 그 뉴스로 사람들과 나눌 수 있는 논쟁거리·질문·반대 관점까지 만들어 줍니다. 정보 습득이 아니라 대화 준비가 목적이에요.' },
+        { q: '처음 설치하면 키워드가 비어있나요?', a: '네. 관심 있는 키워드를 직접 등록해서 써야 합니다. 키워드 관리에서 최대 15개까지 등록·삭제할 수 있고, 등록해 둔 키워드의 3일 이내 뉴스만 보여줍니다.' },
+        { q: '같은 기사를 다시 열면 논쟁거리도 똑같이 나오나요?', a: 'AI가 그때그때 새로 만들기 때문에 완전히 같지는 않을 수 있어요. 다만 한 번 만든 내용은 브라우저를 닫기 전까지 그대로 유지되니, 마음에 든 건 보관함에 저장해 두면 안심입니다.' },
+        { q: '저장한 논쟁거리는 나중에 어디서 다시 보나요?', a: '화면 하단의 "보관함" 탭을 누르면 지금까지 하트로 저장해 둔 논쟁거리를 목록으로 모아서 볼 수 있어요. 최근 저장한 순으로 쌓이고, 최대 60개까지 보관됩니다.' },
+        { q: '보관함 기록이 사라질까 걱정돼요.', a: '보관함은 사용하는 기기에만 저장되고 외부로 전송되지 않습니다. 다만 브라우저 데이터를 지우면 함께 사라지니, 중요한 내용은 공유하기로 따로 보관해 두세요.' },
+        { q: 'API 키가 왜 필요한가요?', a: '기사 요약·논쟁거리 생성 모두 본인의 Claude API 키로 동작합니다(사용료 본인 부담). 아래 "API 키 발급 방법"을 참고하세요.' },
         { q: '제 API 키가 남에게 보이나요?', a: '아니요. 키는 여러분 기기에만 저장되고, AI 요청도 기기에서 직접 보내므로 저희 서버나 다른 사람에게 노출되지 않아요.' }
       ]
     },

@@ -136,6 +136,9 @@
   details.donate summary::-webkit-details-marker { display: none; }
   .donate-body { padding: 4px 0 18px; text-align: center; color: var(--muted); }
   .acct { font-size: 1.05rem; color: var(--text); font-weight: 600; margin: 8px 0; letter-spacing: .01em; }
+  /* 카카오페이 송금 QR — 다크에서도 스캔되도록 흰 배경을 유지한다 */
+  .payqr { display: block; width: 200px; max-width: 70%; height: auto; margin: 12px auto 8px;
+    background: #fff; padding: 8px; border-radius: 12px; }
 
   .apiguide { margin: 40px 0 0; }
   .apiguide .donate-body { text-align: left; }
@@ -206,8 +209,8 @@
         <summary>☕ 도움이 됐다면 — 고마움 표시하기</summary>
         <div class="donate-body">
           <p>무료로 나누는 앱들입니다. 마음이 있으시면 커피 한 잔의 응원 부탁드려요.</p>
-          <p class="acct">○○은행 000-0000-0000-00</p>
-          <p style="font-size:.85rem">예금주: (준비중)</p>
+          <img class="payqr" src="kakaopay-qr.png" alt="카카오페이 송금 QR 코드" loading="lazy">
+          <p style="font-size:.85rem">카카오톡으로 QR을 스캔하면 송금 화면이 열립니다.</p>
         </div>
       </details>
     </section>
